@@ -3,6 +3,10 @@ const PRODUCTS_DEFAULT = [
   { id: "mug", name: "Cốc gốm Studio", category: "Đồ gia dụng", price: 145000, stock: 12 },
   { id: "tote", name: "Túi canvas Daily", category: "Phụ kiện", price: 220000, stock: 9 },
   { id: "bottle", name: "Bình nước Move", category: "Phụ kiện", price: 265000, stock: 14 },
+  { id: "notebook", name: "Sổ tay Kraft", category: "Văn phòng phẩm", price: 79000, stock: 24 },
+  { id: "desk-lamp", name: "Đèn bàn Mini", category: "Đồ gia dụng", price: 329000, stock: 7 },
+  { id: "headphones", name: "Tai nghe Wave", category: "Điện tử", price: 459000, stock: 6 },
+  { id: "thermos", name: "Bình giữ nhiệt Terra", category: "Phụ kiện", price: 179000, stock: 15 },
 ];
 
 const ORDER_KEY = "order-desk-orders-v1";
@@ -10,6 +14,8 @@ const CART_KEY = "order-desk-cart-v1";
 const PRODUCT_KEY = "order-desk-products-v1";
 const money = new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 });
 const orderForm = document.querySelector("#checkout-form");
+const productSearchInput = document.querySelector("#product-search");
+const productCategoryFilter = document.querySelector("#product-category-filter");
 const searchInput = document.querySelector("#order-search");
 const statusFilter = document.querySelector("#status-filter");
 const ordersList = document.querySelector("#orders-list");
@@ -48,6 +54,10 @@ let orders = readStorage(ORDER_KEY, null);
 if (!Array.isArray(orders)) orders = createSampleOrders();
 let products = readStorage(PRODUCT_KEY, null);
 if (!Array.isArray(products)) products = PRODUCTS_DEFAULT;
+else {
+  const savedProductIds = new Set(products.map((product) => product.id));
+  products = [...products, ...PRODUCTS_DEFAULT.filter((product) => !savedProductIds.has(product.id))];
+}
 products = products.map((product) => ({ ...product, stock: Number.isInteger(product.stock) ? product.stock : 0 }));
 let cart = readStorage(CART_KEY, null);
 if (!cart) cart = readStorage(`${CART_KEY}:customer-demo`, readStorage(`${CART_KEY}:admin-demo`, {}));
@@ -64,7 +74,29 @@ function formatDate(value) {
 function renderProducts() {
   const list = document.querySelector("#product-list");
   list.replaceChildren();
-  products.forEach((product, index) => {
+  const selectedCategory = productCategoryFilter.value;
+  const categories = [...new Set(products.map((product) => product.category.trim()).filter(Boolean))]
+    .sort((first, second) => first.localeCompare(second, "vi"));
+  productCategoryFilter.replaceChildren(new Option("Tất cả danh mục", "all"));
+  categories.forEach((category) => productCategoryFilter.add(new Option(category, category)));
+  productCategoryFilter.value = categories.includes(selectedCategory) ? selectedCategory : "all";
+
+  const query = productSearchInput.value.trim().toLocaleLowerCase("vi");
+  const filteredProducts = products.filter((product) => {
+    const matchesQuery = `${product.name} ${product.category}`.toLocaleLowerCase("vi").includes(query);
+    return matchesQuery && (productCategoryFilter.value === "all" || product.category === productCategoryFilter.value);
+  });
+  document.querySelector("#product-results-count").textContent = `${filteredProducts.length} mặt hàng`;
+
+  if (!filteredProducts.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-products";
+    empty.textContent = "Không tìm thấy mặt hàng phù hợp.";
+    list.append(empty);
+    return;
+  }
+
+  filteredProducts.forEach((product, index) => {
     const item = document.createElement("article");
     item.className = "product-row";
     const number = document.createElement("span");
@@ -76,28 +108,6 @@ function renderProducts() {
     name.textContent = product.name;
     const category = document.createElement("p");
     category.textContent = `${product.category} · Còn ${Math.max(0, product.stock - (Number(cart[product.id]) || 0))}`;
-    const restockForm = document.createElement("form");
-    restockForm.className = "restock-form";
-    const restockQuantity = document.createElement("input");
-    restockQuantity.type = "number";
-    restockQuantity.min = "1";
-    restockQuantity.step = "1";
-    restockQuantity.value = "1";
-    restockQuantity.required = true;
-    restockQuantity.setAttribute("aria-label", `Số lượng nhập thêm ${product.name}`);
-    const restockButton = document.createElement("button");
-    restockButton.type = "submit";
-    restockButton.textContent = "Nhập kho";
-    restockForm.append(restockQuantity, restockButton);
-    restockForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const quantity = Number(restockQuantity.value);
-      if (!Number.isSafeInteger(quantity) || quantity < 1 || product.stock + quantity > Number.MAX_SAFE_INTEGER) return;
-      product.stock += quantity;
-      saveStorage(PRODUCT_KEY, products);
-      storageStatus.textContent = `Đã nhập thêm ${quantity} ${product.name}`;
-      renderProducts();
-    });
     const price = document.createElement("strong");
     price.textContent = formatMoney(product.price);
     const add = document.createElement("button");
@@ -113,11 +123,14 @@ function renderProducts() {
       renderCart();
       renderProducts();
     });
-    info.append(name, category, restockForm);
+    info.append(name, category);
     item.append(number, info, price, add);
     list.append(item);
   });
 }
+
+productSearchInput.addEventListener("input", renderProducts);
+productCategoryFilter.addEventListener("change", renderProducts);
 
 function renderCart() {
   const list = document.querySelector("#cart-items");
@@ -168,7 +181,9 @@ function renderCart() {
   document.querySelector("#checkout-submit").disabled = count === 0 || stockIssue;
   document.querySelector("#checkout-status").textContent = stockIssue
     ? "Giỏ hàng vượt quá tồn kho hiện tại. Vui lòng điều chỉnh số lượng."
-    : "";
+    : count === 0
+      ? "Thêm ít nhất một mặt hàng vào giỏ để tạo đơn."
+      : "";
 }
 
 function changeQuantity(productId, amount) {

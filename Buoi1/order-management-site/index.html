@@ -45,6 +45,13 @@
             <div><p class="eyebrow">01 / SẢN PHẨM</p><h2>Chọn mặt hàng</h2></div>
             <span class="small-note">Bấm + để thêm vào giỏ</span>
           </div>
+          <div class="product-tools">
+            <label class="search-box" for="product-search"><span aria-hidden="true">⌕</span><input id="product-search" type="search" placeholder="Tìm mặt hàng, danh mục..." /></label>
+            <label class="select-wrap" for="product-category-filter"><span class="visually-hidden">Lọc theo danh mục mặt hàng</span>
+              <select id="product-category-filter"><option value="all">Tất cả danh mục</option></select>
+            </label>
+            <span id="product-results-count" class="results-count" aria-live="polite"></span>
+          </div>
           <div id="product-list" class="product-list"></div>
 
           <section class="cart-section" aria-labelledby="cart-heading">

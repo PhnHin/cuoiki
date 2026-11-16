@@ -55,17 +55,17 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(36, 92, 70, .5);
 .section-heading h2, .cart-heading h2, .checkout-panel h2, .dialog-heading h2 { margin: 0; font-size: 21px; font-weight: 600; }
 .section-heading .eyebrow, .cart-heading .eyebrow { margin-bottom: 5px; }
 .small-note, .results-count { color: #78827b; font-size: 11px; }
+.product-tools { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+.product-tools .search-box { flex: 1; width: auto; }
+.product-tools .select-wrap { min-width: 150px; }
+.product-tools .select-wrap select { width: 100%; }
+.product-tools .results-count { flex: 0 0 auto; }
+.empty-products { margin: 0; padding: 18px 4px; color: #78827b; font-size: 12px; }
 .product-list { margin-top: 18px; border-top: 1px solid #dedfd7; }
 .product-row { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto 34px; align-items: center; gap: 12px; min-height: 67px; border-bottom: 1px solid #dedfd7; }
 .product-index { color: #a3a89f; font: 11px "DM Mono", monospace; }
 .product-info h3 { margin: 0; font-size: 13px; font-weight: 600; }
 .product-info p { margin: 2px 0 0; color: #78827b; font-size: 10px; }
-.restock-form { display: flex; align-items: center; gap: 5px; margin-top: 5px; }
-.restock-form input { width: 48px; height: 24px; padding: 2px 5px; border: 1px solid #dedfd7; background: #fffefa; color: #20342c; font-size: 10px; }
-.restock-form input:focus { outline: 2px solid rgba(36, 92, 70, .2); border-color: #245c46; }
-.restock-form button { min-height: 24px; padding: 2px 7px; border: 1px solid #c9d4ca; background: #e4eee6; color: #245c46; cursor: pointer; font-size: 9px; }
-.restock-form button:hover { border-color: #245c46; background: #245c46; color: #fffefa; }
-.restock-form button:focus-visible { outline: 2px solid rgba(36, 92, 70, .5); outline-offset: 2px; }
 .product-row > strong { font: 12px "DM Mono", monospace; white-space: nowrap; }
 .add-product { width: 31px; height: 31px; border: 1px solid #c9d4ca; background: #e4eee6; color: #245c46; cursor: pointer; font-size: 20px; line-height: 1; transition: background 160ms ease, color 160ms ease; }
 .add-product:hover { background: #245c46; color: #fffefa; }
@@ -180,6 +180,9 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(36, 92, 70, .5);
   .small-note { max-width: 110px; text-align: right; }
   .product-row { grid-template-columns: 25px minmax(0, 1fr) auto 31px; gap: 8px; }
   .product-row > strong { font-size: 10px; }
+  .product-tools { flex-wrap: wrap; }
+  .product-tools .search-box { flex-basis: 100%; }
+  .product-tools .select-wrap { flex: 1; }
   .orders-section { padding: 30px 0; }
   .order-tools { flex-wrap: wrap; }
   .search-box { flex-basis: 100%; }
