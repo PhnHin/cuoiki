@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Bảng điều khiển quản lý đơn hàng và giỏ hàng của cửa hàng nhỏ." />
+    <meta name="theme-color" content="#f4f3ee" />
+    <title>Order Desk | Quản lý đơn hàng</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/order-management-dashboard.css" />
+    <script src="js/order-entry.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="Order Desk, trang chủ">
+        <span class="brand-mark" aria-hidden="true">od</span>
+        <span>order<span class="brand-light">desk</span></span>
+      </a>
+      <div class="topbar-meta">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span id="storage-status" role="status" aria-live="polite">Dữ liệu lưu trên thiết bị</span>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">BẢNG ĐIỀU KHIỂN <span>/</span> CỬA HÀNG</p>
+          <h1 id="page-title">Đơn hàng, <em>gọn gàng.</em></h1>
+          <p class="intro-copy">Theo dõi giỏ hàng và xử lý đơn mới trong một nơi.</p>
+        </div>
+      </section>
+
+      <section class="stats" aria-label="Tổng quan đơn hàng">
+        <article class="stat-item"><span class="stat-label">TỔNG ĐƠN</span><strong id="stat-orders">0</strong><span class="stat-note">đơn đã ghi nhận</span></article>
+        <article class="stat-item stat-accent"><span class="stat-label">ĐANG XỬ LÝ</span><strong id="stat-pending">0</strong><span class="stat-note">cần được hoàn tất</span></article>
+        <article class="stat-item"><span class="stat-label">DOANH THU HOÀN TẤT</span><strong id="stat-revenue">0 ₫</strong><span class="stat-note">từ đơn hoàn thành</span></article>
+      </section>
+
+      <section class="workspace" aria-label="Tạo đơn hàng mới">
+        <div class="catalog-column">
+          <div class="section-heading">
+            <div><p class="eyebrow">01 / SẢN PHẨM</p><h2>Chọn mặt hàng</h2></div>
+            <span class="small-note">Bấm + để thêm vào giỏ</span>
+          </div>
+          <div id="product-list" class="product-list"></div>
+
+          <section class="cart-section" aria-labelledby="cart-heading">
+            <div class="cart-heading">
+              <div><p class="eyebrow">02 / GIỎ HÀNG</p><h2 id="cart-heading">Đơn mới <span id="cart-count" class="count-pill">00</span></h2></div>
+              <button id="clear-cart" class="quiet-button" type="button">Làm trống</button>
+            </div>
+            <div id="cart-items" class="cart-items" aria-live="polite"></div>
+            <div class="cart-total"><span>Tạm tính</span><strong id="cart-total">0 ₫</strong></div>
+          </section>
+        </div>
+
+        <form id="checkout-form" class="checkout-panel">
+          <p class="eyebrow">03 / THÔNG TIN GIAO HÀNG</p>
+          <h2>Tạo đơn mới</h2>
+          <label for="customer-name">Tên khách hàng</label>
+          <input id="customer-name" name="customer" autocomplete="name" required />
+          <label for="customer-phone">Số điện thoại</label>
+          <input id="customer-phone" name="phone" type="tel" autocomplete="tel" required minlength="8" maxlength="20" />
+          <label for="customer-address">Địa chỉ nhận hàng</label>
+          <input id="customer-address" name="address" autocomplete="street-address" required />
+          <label for="customer-note">Ghi chú <span>(không bắt buộc)</span></label>
+          <textarea id="customer-note" name="note" rows="3"></textarea>
+          <button id="checkout-submit" class="primary-button" type="submit" disabled><span>Tạo đơn hàng</span><span aria-hidden="true">↗</span></button>
+          <p id="checkout-status" class="form-status" role="status" aria-live="polite"></p>
+          <p class="privacy-note">Thông tin được lưu cục bộ trên trình duyệt này.</p>
+        </form>
+      </section>
+
+      <section class="orders-section" aria-labelledby="orders-heading">
+        <div class="orders-top">
+          <div class="section-heading">
+            <div><p class="eyebrow">04 / THEO DÕI</p><h2 id="orders-heading">Danh sách đơn</h2></div>
+            <span id="results-count" class="results-count">0 đơn hàng</span>
+          </div>
+          <div class="order-tools">
+            <label class="search-box" for="order-search"><span aria-hidden="true">⌕</span><input id="order-search" type="search" placeholder="Tìm mã đơn, khách hàng..." /></label>
+            <label class="select-wrap" for="status-filter"><span class="visually-hidden">Lọc trạng thái đơn hàng</span>
+              <select id="status-filter"><option value="all">Tất cả trạng thái</option><option value="pending">Đang xử lý</option><option value="completed">Hoàn thành</option></select>
+            </label>
+          </div>
+        </div>
+        <div class="order-list-heading" aria-hidden="true"><span>ĐƠN HÀNG / KHÁCH HÀNG</span><span>THÀNH TIỀN</span></div>
+        <div id="orders-list" class="orders-list" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer"><span>ORDER DESK <span class="footer-dot">·</span> BÀI TẬP HTML / SCSS / JAVASCRIPT</span><span class="exchange-note">Tỷ giá tham khảo USD/VND: <strong id="exchange-rate">Đang tải...</strong> <small id="exchange-status" role="status" aria-live="polite"></small></span></footer>
+
+  </body>
+</html>
